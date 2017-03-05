@@ -42,3 +42,5 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      */
     return nullptr;
 }
+
+// Free points are cool!
