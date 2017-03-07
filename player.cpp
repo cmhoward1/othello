@@ -46,7 +46,27 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     board->doMove(opponentsMove, opp_side);
 
     // Store all of my possible moves in a vector
+    // A score should have the same index as its corresponding move
+    // Arbitrarily, score:
+    // +---+---+---+---+---+---+---+---+
+    // | 2 |-1 | 1 | 1 | 1 | 1 |-1 | 2 |
+    // +---+---+---+---+---+---+---+---+
+    // |-1 |-2 | 0 | 0 | 0 | 0 |-2 |-1 |
+    // +---+---+---+---+---+---+---+---+
+    // | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+    // +---+---+---+---+---+---+---+---+
+    // | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+    // +---+---+---+---+---+---+---+---+
+    // | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+    // +---+---+---+---+---+---+---+---+
+    // | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+    // +---+---+---+---+---+---+---+---+
+    // |-1 |-2 | 0 | 0 | 0 | 0 |-2 |-1 |
+    // +---+---+---+---+---+---+---+---+
+    // | 2 |-1 | 1 | 1 | 1 | 1 |-1 | 2 |
+    // +---+---+---+---+---+---+---+---+
     std::vector<Move*> moves;
+    std::vector<int> scores;
     
     // If there are possible moves, push them back to the vector
     if (board->hasMoves(my_side))
@@ -59,6 +79,29 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     		    if (board->checkMove(a_move, my_side))
     		    {
     		    	moves.push_back(a_move);
+    		    	if ((i == 1 || i == 6) && (j == 1 || j == 6))
+    		    	{
+    		    		scores.push_back(-2);
+    		    	}
+    		    	else if (i == 0 || i == 7)
+    		    	{
+    		    		if (j == 0 || j == 7)
+    		    		{
+    		    			scores.push_back(2);
+    		    		}
+    		    		else if (j == 1 || j == 6)
+    		    		{
+    		    			scores.push_back(-1);
+    		    		}
+    		    		else
+    		    		{
+    		    			scores.push_back(1);
+    		    		}
+    		    	}
+    		    	else
+    		    	{
+    		    		scores.push_back(0);
+    		    	}
     		    }
     		    // free memory!
     		    else 
@@ -67,8 +110,16 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     		    }
     	    }
         }
-        // Select a random move from the possible moves 
-        int my_move_index = rand() % moves.size();
+        // Select a find the index with the maximum score 
+        int my_move_index = 0;
+        for (int i = 0; i < (int) scores.size(); ++i)
+        {
+        	if (scores[i] > scores[my_move_index])
+        	{
+        		my_move_index = i;
+        	}
+        }
+  
         board->doMove(moves[my_move_index], my_side);
 
         // free memory!
