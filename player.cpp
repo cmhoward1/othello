@@ -9,11 +9,9 @@ Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
 
-    /*
-     * TODO: Do any initialization you need to do here (setting up the board,
-     * precalculating things, etc.) However, remember that you will only have
-     * 30 seconds.
-     */
+    board = new Board();
+    my_side = side;
+
 }
 
 /*
@@ -35,12 +33,54 @@ Player::~Player() {
  * The move returned must be legal; if there are no valid moves for your side,
  * return nullptr.
  */
-Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    /*
-     * TODO: Implement how moves your AI should play here. You should first
-     * process the opponent's opponents move before calculating your own move
-     */
+Move *Player::doMove(Move *opponentsMove, int msLeft) 
+{  
+    // Set the opponent's side to whatever my side isn't
+    Side opp_side = BLACK;
+    if (my_side == BLACK)
+    {
+    	opp_side = WHITE;
+    }
+    
+    // update the board to have the opponent's move
+    board->doMove(opponentsMove, opp_side);
+
+    // Store all of my possible moves in a vector
+    std::vector<Move*> moves;
+    
+    // If there are possible moves, push them back to the vector
+    if (board->hasMoves(my_side))
+    {
+    	for (int i = 0; i < 8; ++i)
+        {
+    	    for (int j = 0; j < 8; ++j)
+    	    {
+    		    Move *a_move = new Move(i, j);
+    		    if (board->checkMove(a_move, my_side))
+    		    {
+    		    	moves.push_back(a_move);
+    		    }
+    		    // free memory!
+    		    else 
+    		    {
+    		    	delete a_move;
+    		    }
+    	    }
+        }
+        // Select a random move from the possible moves 
+        int my_move_index = rand() % moves.size();
+        board->doMove(moves[my_move_index], my_side);
+
+        // free memory!
+        for (int i = 0; i < (int) moves.size(); ++i)
+        {
+        	if (i != my_move_index)
+        	{
+        		delete moves[i];
+        	}
+        }
+        return moves[my_move_index];
+    }
     return nullptr;
 }
 
-// Free points are cool!
