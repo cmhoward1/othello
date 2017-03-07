@@ -22,12 +22,12 @@ Player::~Player() {
 
 /*
  *
- *
+ */
 Move *Player::move_minimax(Board *board, Side side, int depth)
 {
 	Side other = (side == BLACK) ? WHITE : BLACK;
 	std::vector<Move*> moves;
-	for (int i = 0; i < 8; ++i)
+	    for (int i = 0; i < 8; ++i)
         {
         	for (int j = 0; j < 8; ++j)
         	{
@@ -45,7 +45,7 @@ Move *Player::move_minimax(Board *board, Side side, int depth)
         }
         
         float best_score = -500000;
-        Move *best_move = nullptr;
+        Move *best_move = moves[0];
 
         // check out each move on a copy of the board
         for (int i = 0; i < (int) moves.size(); ++i)
@@ -53,8 +53,8 @@ Move *Player::move_minimax(Board *board, Side side, int depth)
         	// check out each move on a copy of the board
             Board *copyboard = board->copy();
 
-        	copyboard->doMove(moves[i], my_side);
-        	float score = mininmax(copyboard, other, depth + 1);
+        	copyboard->doMove(moves[i], side);
+        	float score = - minimax(copyboard, other, depth + 1);
         	if(best_score < score)
         	{
                 best_score = score;
@@ -65,12 +65,11 @@ Move *Player::move_minimax(Board *board, Side side, int depth)
             delete copyboard;
         }
         return best_move;
-
-}*/
+}
 
 /*
  * Implement minimax 
- *
+ */
 float Player::minimax(Board *board, Side side, int depth)
 {
 	Side other = (side == BLACK) ? WHITE : BLACK;
@@ -107,8 +106,8 @@ float Player::minimax(Board *board, Side side, int depth)
         	// check out each move on a copy of the board
             Board *copyboard = board->copy();
 
-        	copyboard->doMove(moves[i], my_side);
-        	float score = mininmax(copyboard, other, depth + 1);
+        	copyboard->doMove(moves[i], side);
+        	float score = - minimax(copyboard, other, depth + 1);
         	if(best_score < score)
         	{
                 best_score = score;
@@ -119,7 +118,7 @@ float Player::minimax(Board *board, Side side, int depth)
         }
         return best_score;
 	}
-}*/
+}
 
 /*
  * Compute the next move given the opponent's last move. Your AI is
@@ -167,13 +166,14 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     // | 3 |-1 | 2 | 2 | 2 | 2 |-1 | 3 |
     // +---+---+---+---+---+---+---+---+
     std::vector<Move*> moves;
-    std::vector<float> positionscores;
-    std::vector<float> boardscores;
+    /*std::vector<float> positionscores;
+    std::vector<float> boardscores;*/
     
     // If there are possible moves, push them back to the vector
     if (board->hasMoves(my_side))
     {
-    	for (int i = 0; i < 8; ++i)
+    	
+    	/*for (int i = 0; i < 8; ++i)
         {
     	    for (int j = 0; j < 8; ++j)
     	    {
@@ -216,10 +216,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     		    	delete a_move;
     		    }
     	    }
-        }
+        }*/
         
         
-
+/*
         // find the resulting score of each move
         for (int i = 0; i < (int) moves.size(); ++i)
         {
@@ -259,8 +259,12 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
         	{
         		delete moves[i];
         	}
-        }
-        return moves[my_move_index];
+        }*/
+        Move *move = move_minimax(board, my_side, 0);
+
+        board->doMove(move, my_side);
+
+        return move;
     }
     return nullptr;
 }
