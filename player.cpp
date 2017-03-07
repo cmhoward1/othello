@@ -1,5 +1,5 @@
 #include "player.hpp"
-#define DEPTH 2
+#define DEPTH 4
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -55,6 +55,58 @@ Move *Player::move_minimax(Board *board, Side side, int depth)
 
         	copyboard->doMove(moves[i], side);
         	float score = - minimax(copyboard, other, depth + 1);
+        	if (moves[i]->getX() == 0 || moves[i]->getX() == 7)
+        	{
+        		// corners are very good!
+        		if (moves[i]->getY() == 0 || moves[i]->getY() == 7)
+        		{
+        			if (score > 0)
+        			{
+        				score *= 5;
+        			}
+        			else
+        			{
+        				score *= -1;
+        			}
+        		}
+        		//next to corners is bad
+        		else if (moves[i]->getY() == 1 || moves[i]-> getY() == 6)
+        		{
+        			if(score > 0)
+        		    {
+        				score *= 0.5;
+        			}
+        			else
+        			{
+        				score *= 2;
+        			}
+        		}
+        		// edges are good!
+        		else
+        		{
+        			if(score > 0)
+        			{	
+        			    score *= 2;
+        			}
+        			else
+        			{
+        				score *= -.5;
+        			}
+        		}
+        	}
+        	// diagonal from corners is very bad!
+        	else if ((moves[i]->getX() == 1 || moves[i]->getX() == 6) &&
+        		     (moves[i]->getY() == 1 || moves[i]->getY() == 6))
+        	{
+        		if (score > 0)
+        		{
+        			score *= -1;
+        		}
+        		else
+        		{
+        			score *= 3;
+        		}
+        	}
         	if(best_score < score)
         	{
                 best_score = score;
