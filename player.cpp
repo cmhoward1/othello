@@ -1,5 +1,5 @@
 #include "player.hpp"
-
+#define DEPTH 2
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -19,6 +19,107 @@ Player::Player(Side side) {
  */
 Player::~Player() {
 }
+
+/*
+ *
+ *
+Move *Player::move_minimax(Board *board, Side side, int depth)
+{
+	Side other = (side == BLACK) ? WHITE : BLACK;
+	std::vector<Move*> moves;
+	for (int i = 0; i < 8; ++i)
+        {
+        	for (int j = 0; j < 8; ++j)
+        	{
+        		Move *a_move = new Move(i, j);
+        		if (board->checkMove(a_move, side))
+        		{
+                    moves.push_back(a_move);
+        		}
+        		// free memory!
+        		else
+        		{
+        			delete a_move;
+        		}
+        	}
+        }
+        
+        float best_score = -500000;
+        Move *best_move = nullptr;
+
+        // check out each move on a copy of the board
+        for (int i = 0; i < (int) moves.size(); ++i)
+        {
+        	// check out each move on a copy of the board
+            Board *copyboard = board->copy();
+
+        	copyboard->doMove(moves[i], my_side);
+        	float score = mininmax(copyboard, other, depth + 1);
+        	if(best_score < score)
+        	{
+                best_score = score;
+                best_move = moves[i];
+        	}
+
+        	// free memory!
+            delete copyboard;
+        }
+        return best_move;
+
+}*/
+
+/*
+ * Implement minimax 
+ *
+float Player::minimax(Board *board, Side side, int depth)
+{
+	Side other = (side == BLACK) ? WHITE : BLACK;
+	if (depth == DEPTH)
+	{
+		return board->count(side) - board->count(other);
+	}
+
+	else 
+	{
+        std::vector<Move*> moves;
+        for (int i = 0; i < 8; ++i)
+        {
+        	for (int j = 0; j < 8; ++j)
+        	{
+        		Move *a_move = new Move(i, j);
+        		if (board->checkMove(a_move, side))
+        		{
+                    moves.push_back(a_move);
+        		}
+        		// free memory!
+        		else
+        		{
+        			delete a_move;
+        		}
+        	}
+        }
+        
+        float best_score = -500000;
+
+        // check out each move on a copy of the board
+        for (int i = 0; i < (int) moves.size(); ++i)
+        {
+        	// check out each move on a copy of the board
+            Board *copyboard = board->copy();
+
+        	copyboard->doMove(moves[i], my_side);
+        	float score = mininmax(copyboard, other, depth + 1);
+        	if(best_score < score)
+        	{
+                best_score = score;
+        	}
+
+        	// free memory!
+            delete copyboard;
+        }
+        return best_score;
+	}
+}*/
 
 /*
  * Compute the next move given the opponent's last move. Your AI is
@@ -46,27 +147,28 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     board->doMove(opponentsMove, opp_side);
 
     // Store all of my possible moves in a vector
-    // A score should have the same index as its corresponding move
-    // Arbitrarily, score:
+    // A positiont score should have the same index as its corresponding move
+    // Arbitrarily, position score:
     // +---+---+---+---+---+---+---+---+
-    // | 2 |-1 | 1 | 1 | 1 | 1 |-1 | 2 |
+    // | 3 |-1 | 2 | 2 | 2 | 2 |-1 | 3 |
     // +---+---+---+---+---+---+---+---+
-    // |-1 |-2 | 0 | 0 | 0 | 0 |-2 |-1 |
+    // |-1 |-2 | 1 | 1 | 1 | 1 |-2 |-1 |
     // +---+---+---+---+---+---+---+---+
-    // | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+    // | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 2 |
     // +---+---+---+---+---+---+---+---+
-    // | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+    // | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 2 |
     // +---+---+---+---+---+---+---+---+
-    // | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+    // | 3 | 1 | 1 | 1 | 1 | 1 | 1 | 2 |
     // +---+---+---+---+---+---+---+---+
-    // | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
+    // | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 2 |
     // +---+---+---+---+---+---+---+---+
-    // |-1 |-2 | 0 | 0 | 0 | 0 |-2 |-1 |
+    // |-1 |-2 | 1 | 1 | 1 | 1 |-2 |-1 |
     // +---+---+---+---+---+---+---+---+
-    // | 2 |-1 | 1 | 1 | 1 | 1 |-1 | 2 |
+    // | 3 |-1 | 2 | 2 | 2 | 2 |-1 | 3 |
     // +---+---+---+---+---+---+---+---+
     std::vector<Move*> moves;
-    std::vector<int> scores;
+    std::vector<float> positionscores;
+    std::vector<float> boardscores;
     
     // If there are possible moves, push them back to the vector
     if (board->hasMoves(my_side))
@@ -79,28 +181,33 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     		    if (board->checkMove(a_move, my_side))
     		    {
     		    	moves.push_back(a_move);
+    		    	// diagonal from corners is very bad!
     		    	if ((i == 1 || i == 6) && (j == 1 || j == 6))
     		    	{
-    		    		scores.push_back(-2);
+    		    		positionscores.push_back(-1);
     		    	}
     		    	else if (i == 0 || i == 7)
     		    	{
+    		    		// corners are very good!
     		    		if (j == 0 || j == 7)
     		    		{
-    		    			scores.push_back(2);
+    		    			positionscores.push_back(5);
     		    		}
+    		    		// next to corners is bad!
     		    		else if (j == 1 || j == 6)
     		    		{
-    		    			scores.push_back(-1);
+    		    			positionscores.push_back(.2);
     		    		}
+    		    		// edges are good!
     		    		else
     		    		{
-    		    			scores.push_back(1);
+    		    			positionscores.push_back(2);
     		    		}
     		    	}
+    		    	// everything else is meh
     		    	else
     		    	{
-    		    		scores.push_back(0);
+    		    		positionscores.push_back(1);
     		    	}
     		    }
     		    // free memory!
@@ -110,11 +217,34 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     		    }
     	    }
         }
-        // Select a find the index with the maximum score 
-        int my_move_index = 0;
-        for (int i = 0; i < (int) scores.size(); ++i)
+        
+        
+
+        // find the resulting score of each move
+        for (int i = 0; i < (int) moves.size(); ++i)
         {
-        	if (scores[i] > scores[my_move_index])
+        	// check out each move on a copy of the board
+            Board *copyboard = board->copy();
+        	copyboard->doMove(moves[i], my_side);
+        	boardscores.push_back(copyboard->count(my_side) 
+        		                  - copyboard->count(opp_side));
+        	// free memory!
+            delete copyboard;
+        }
+
+        
+
+        // scale our board scores by their position scores
+        for (int i = 0; i < (int) boardscores.size(); ++i)
+        {
+        	boardscores[i] = boardscores[i] * positionscores[i];
+        }
+
+        // Select a find the index with the maximum score
+        int my_move_index = 0;
+        for (int i = 0; i < (int) boardscores.size(); ++i)
+        {
+        	if (boardscores[i] > boardscores[my_move_index])
         	{
         		my_move_index = i;
         	}
