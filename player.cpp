@@ -21,7 +21,8 @@ Player::~Player() {
 }
 
 /*
- *
+ * Finds the best move by calling minimax, and scales the score using its
+ * position on the board.
  */
 Move *Player::move_minimax(Board *board, Side side, int depth)
 {
@@ -120,7 +121,8 @@ Move *Player::move_minimax(Board *board, Side side, int depth)
 }
 
 /*
- * Implement minimax 
+ * Looks forward at the next DEPTH moves and maximizes the input side's
+ * minimum score after that many moves. 
  */
 float Player::minimax(Board *board, Side side, int depth)
 {
@@ -196,122 +198,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     
     // update the board to have the opponent's move
     board->doMove(opponentsMove, opp_side);
-
-    // Store all of my possible moves in a vector
-    // A positiont score should have the same index as its corresponding move
-    // Arbitrarily, position score:
-    // +---+---+---+---+---+---+---+---+
-    // | 3 |-1 | 2 | 2 | 2 | 2 |-1 | 3 |
-    // +---+---+---+---+---+---+---+---+
-    // |-1 |-2 | 1 | 1 | 1 | 1 |-2 |-1 |
-    // +---+---+---+---+---+---+---+---+
-    // | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 2 |
-    // +---+---+---+---+---+---+---+---+
-    // | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 2 |
-    // +---+---+---+---+---+---+---+---+
-    // | 3 | 1 | 1 | 1 | 1 | 1 | 1 | 2 |
-    // +---+---+---+---+---+---+---+---+
-    // | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 2 |
-    // +---+---+---+---+---+---+---+---+
-    // |-1 |-2 | 1 | 1 | 1 | 1 |-2 |-1 |
-    // +---+---+---+---+---+---+---+---+
-    // | 3 |-1 | 2 | 2 | 2 | 2 |-1 | 3 |
-    // +---+---+---+---+---+---+---+---+
-    std::vector<Move*> moves;
-    /*std::vector<float> positionscores;
-    std::vector<float> boardscores;*/
     
-    // If there are possible moves, push them back to the vector
+    // If there are possible moves, find the best one using minimax and do it
     if (board->hasMoves(my_side))
     {
-    	
-    	/*for (int i = 0; i < 8; ++i)
-        {
-    	    for (int j = 0; j < 8; ++j)
-    	    {
-    		    Move *a_move = new Move(i, j);
-    		    if (board->checkMove(a_move, my_side))
-    		    {
-    		    	moves.push_back(a_move);
-    		    	// diagonal from corners is very bad!
-    		    	if ((i == 1 || i == 6) && (j == 1 || j == 6))
-    		    	{
-    		    		positionscores.push_back(-1);
-    		    	}
-    		    	else if (i == 0 || i == 7)
-    		    	{
-    		    		// corners are very good!
-    		    		if (j == 0 || j == 7)
-    		    		{
-    		    			positionscores.push_back(5);
-    		    		}
-    		    		// next to corners is bad!
-    		    		else if (j == 1 || j == 6)
-    		    		{
-    		    			positionscores.push_back(.2);
-    		    		}
-    		    		// edges are good!
-    		    		else
-    		    		{
-    		    			positionscores.push_back(2);
-    		    		}
-    		    	}
-    		    	// everything else is meh
-    		    	else
-    		    	{
-    		    		positionscores.push_back(1);
-    		    	}
-    		    }
-    		    // free memory!
-    		    else 
-    		    {
-    		    	delete a_move;
-    		    }
-    	    }
-        }*/
-        
-        
-/*
-        // find the resulting score of each move
-        for (int i = 0; i < (int) moves.size(); ++i)
-        {
-        	// check out each move on a copy of the board
-            Board *copyboard = board->copy();
-        	copyboard->doMove(moves[i], my_side);
-        	boardscores.push_back(copyboard->count(my_side) 
-        		                  - copyboard->count(opp_side));
-        	// free memory!
-            delete copyboard;
-        }
-
-        
-
-        // scale our board scores by their position scores
-        for (int i = 0; i < (int) boardscores.size(); ++i)
-        {
-        	boardscores[i] = boardscores[i] * positionscores[i];
-        }
-
-        // Select a find the index with the maximum score
-        int my_move_index = 0;
-        for (int i = 0; i < (int) boardscores.size(); ++i)
-        {
-        	if (boardscores[i] > boardscores[my_move_index])
-        	{
-        		my_move_index = i;
-        	}
-        }
-  
-        board->doMove(moves[my_move_index], my_side);
-
-        // free memory!
-        for (int i = 0; i < (int) moves.size(); ++i)
-        {
-        	if (i != my_move_index)
-        	{
-        		delete moves[i];
-        	}
-        }*/
         Move *move = move_minimax(board, my_side, 0);
 
         board->doMove(move, my_side);
