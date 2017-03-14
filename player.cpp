@@ -1,5 +1,5 @@
 #include "player.hpp"
-#define DEPTH 4
+#define DEPTH 5
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -152,7 +152,9 @@ float Player::minimax(Board *board, Side side, int depth)
         	}
         }
         
+        // try some alpha-beta pruning
         float best_score = -500000;
+        float worst_score = 500000;
 
         // check out each move on a copy of the board
         for (int i = 0; i < (int) moves.size(); ++i)
@@ -161,7 +163,14 @@ float Player::minimax(Board *board, Side side, int depth)
             Board *copyboard = board->copy();
 
         	copyboard->doMove(moves[i], side);
-        	float score = - minimax(copyboard, other, depth + 1);
+        	float score;
+            if(best_score > worst_score){
+        	    score = - minimax(copyboard, other, depth + 1);
+            }
+        	if (worst_score > score)
+        	{
+        		worst_score = score;
+        	}
         	if(best_score < score)
         	{
                 best_score = score;
